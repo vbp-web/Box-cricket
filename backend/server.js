@@ -72,6 +72,7 @@ import turfRoutes from './routes/turf.js';
 import slotRoutes from './routes/slot.js';
 import bookingRoutes from './routes/booking.js';
 import paymentRoutes from './routes/payment.js';
+import adminRoutes from './routes/admin.js';
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -79,6 +80,7 @@ app.use('/api/turfs', turfRoutes);
 app.use('/api/slots', slotRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {
