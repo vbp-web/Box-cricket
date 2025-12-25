@@ -8,11 +8,19 @@ const getApiUrl = () => {
         return import.meta.env.VITE_API_URL;
     }
 
-    // Otherwise, use the current hostname with backend port
-    // This makes it work on both localhost and when accessed via IP address
+    // In production (Render), frontend and backend are on same domain
+    // Check if we're on localhost or an IP address (development)
     const hostname = window.location.hostname;
-    const protocol = window.location.protocol;
-    return `${protocol}//${hostname}:5000/api`;
+    const isDevelopment = hostname === 'localhost' || hostname === '127.0.0.1' || /^\d+\.\d+\.\d+\.\d+$/.test(hostname);
+
+    if (isDevelopment) {
+        // Development: use hostname with port 5000
+        const protocol = window.location.protocol;
+        return `${protocol}//${hostname}:5000/api`;
+    } else {
+        // Production: same domain, just /api
+        return '/api';
+    }
 };
 
 const API_URL = getApiUrl();
