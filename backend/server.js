@@ -3,10 +3,16 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import connectDB from './config/db.js';
 import errorHandler from './middleware/errorHandler.js';
 import morganMiddleware from './middleware/logger.js';
 import { logger } from './utils/logger.js';
+
+// ES Module __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load env vars
 dotenv.config();
@@ -68,13 +74,24 @@ app.get('/health', (req, res) => {
     });
 });
 
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        message: 'Route not found',
+// Serve static files from frontend build in production
+if (process.env.NODE_ENV === 'production') {
+    // Serve static files
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+    // Handle React routing - serve index.html for all non-API routes
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
     });
-});
+} else {
+    // 404 handler for development
+    app.use((req, res) => {
+        res.status(404).json({
+            success: false,
+            message: 'Route not found',
+        });
+    });
+}
 
 // Error handler
 app.use(errorHandler);
