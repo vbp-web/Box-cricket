@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <!-- Primary Meta Tags -->
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+  <meta name="description"
+    content="Shiva's Box Cricket - Book your slot at Kalol's premier box cricket turf. Real-time slot booking, secure payments, and best facilities." />
+  <meta name="keywords" content="cricket, turf booking, box cricket, Kalol, sports, booking platform" />
+  <meta name="author" content="Shiva's Hub" />
+  <meta name="theme-color" content="#ea580c" />
+
+  <!-- Mobile Web App Capable -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Shiva's Cricket" />
+
+  <!-- Format Detection -->
+  <meta name="format-detection" content="telephone=yes" />
+  <meta name="format-detection" content="address=yes" />
+
+  <!-- Disable automatic translation -->
+  <meta name="google" content="notranslate" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Shiva's Box Cricket - Online Booking | Kalol" />
+  <meta property="og:description"
+    content="Book your slot at Kalol's premier box cricket turf. Real-time booking, secure payments." />
+  <meta property="og:image" content="/og-image.jpg" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Shiva's Box Cricket - Online Booking" />
+  <meta name="twitter:description" content="Book your slot at Kalol's premier box cricket turf." />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/cricket-icon.svg" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+  <!-- Manifest for PWA -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Razorpay -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Title -->
+  <title>Shiva's Box Cricket - Online Booking | Kalol</title>
+
+  <!-- Preload critical resources -->
+  <link rel="preload" as="style" href="/src/index.css" />
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+
+  <!-- Service Worker Registration (for PWA) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {
+          // Service worker not available, that's okay
+        });
+      });
+    }
+  </script>
+</body>
+
+</html>
