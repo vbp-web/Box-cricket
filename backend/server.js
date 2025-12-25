@@ -34,15 +34,8 @@ const limiter = rateLimit({
 
 app.use('/api/', limiter);
 
-// CORS - Allow all origins in development
-const corsOptions = {
-    origin: process.env.NODE_ENV === 'production'
-        ? process.env.FRONTEND_URL
-        : true, // Allow all origins in development
-    credentials: true,
-};
-
-app.use(cors(corsOptions));
+// CORS - Allow all origins (frontend served from same domain in production)
+app.use(cors({ credentials: true, origin: true }));
 
 // Body parser
 app.use(express.json({ limit: '10mb' }));
