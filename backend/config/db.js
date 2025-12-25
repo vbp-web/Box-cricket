@@ -9,13 +9,13 @@ const connectDB = async () => {
     });
 
     logger.info(`MongoDB Connected: ${conn.connection.host}`);
-    
+
     // Create TTL index for slot locks
     await createTTLIndexes();
-    
+
   } catch (error) {
-    logger.error(`Error: ${error.message}`);
-    process.exit(1);
+    logger.error(`MongoDB Connection Error: ${error.message}`);
+    throw error; // Throw error instead of exiting, let caller handle it
   }
 };
 
@@ -23,19 +23,19 @@ const connectDB = async () => {
 const createTTLIndexes = async () => {
   try {
     const db = mongoose.connection.db;
-    
+
     // TTL index for slot locks (expires after SLOT_LOCK_DURATION seconds)
     await db.collection('slots').createIndex(
       { lockedAt: 1 },
-      { 
+      {
         expireAfterSeconds: parseInt(process.env.SLOT_LOCK_DURATION) || 180,
-        partialFilterExpression: { 
+        partialFilterExpression: {
           status: 'locked',
           lockedAt: { $exists: true }
         }
       }
     );
-    
+
     logger.info('TTL indexes created successfully');
   } catch (error) {
     logger.warn(`TTL index creation warning: ${error.message}`);

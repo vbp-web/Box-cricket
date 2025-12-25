@@ -22,14 +22,27 @@ if (process.env.RENDER || !process.env.NODE_ENV) {
     process.env.NODE_ENV = 'production';
 }
 
-// Connect to database
-connectDB().then(async () => {
-    // Auto-seed database if empty
-    const { autoSeedIfEmpty } = await import('./utils/autoSeed.js');
-    await autoSeedIfEmpty();
-});
-
 const app = express();
+
+// Connect to database and auto-seed if needed
+connectDB()
+    .then(async () => {
+        logger.info('Database connected successfully');
+
+        // Auto-seed database if empty (only in production)
+        if (process.env.NODE_ENV === 'production') {
+            try {
+                const { autoSeedIfEmpty } = await import('./utils/autoSeed.js');
+                await autoSeedIfEmpty();
+            } catch (error) {
+                logger.error(`Auto-seed error: ${error.message}`);
+            }
+        }
+    })
+    .catch((error) => {
+        logger.error(`Database connection failed: ${error.message}`);
+        console.error('❌ Failed to connect to MongoDB. Please check MONGO_URI.');
+    });
 
 // Security middleware
 app.use(helmet());
