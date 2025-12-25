@@ -17,6 +17,11 @@ const __dirname = path.dirname(__filename);
 // Load env vars
 dotenv.config();
 
+// Set NODE_ENV to production by default if not specified
+if (!process.env.NODE_ENV) {
+    process.env.NODE_ENV = 'production';
+}
+
 // Connect to database
 connectDB();
 
