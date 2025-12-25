@@ -23,7 +23,11 @@ if (process.env.RENDER || !process.env.NODE_ENV) {
 }
 
 // Connect to database
-connectDB();
+connectDB().then(async () => {
+    // Auto-seed database if empty
+    const { autoSeedIfEmpty } = await import('./utils/autoSeed.js');
+    await autoSeedIfEmpty();
+});
 
 const app = express();
 
