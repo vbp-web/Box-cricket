@@ -1,6 +1,6 @@
 # 🏏 Shiva's Hub - Box Cricket Booking Platform
 
-A modern, full-stack web application for managing box cricket turf bookings with real-time slot management, secure payments, and admin dashboard.
+A modern, full-stack web application for managing box cricket turf bookings with real-time slot management, secure UPI payments, and comprehensive admin dashboard.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)
@@ -55,7 +55,7 @@ A modern, full-stack web application for managing box cricket turf bookings with
 
 ---
 
-## 📦 Installation
+## 📦 Local Installation & Setup
 
 ### Prerequisites
 - Node.js (v18 or higher)
@@ -63,49 +63,25 @@ A modern, full-stack web application for managing box cricket turf bookings with
 - Cloudinary account (for images)
 - Git
 
-### Clone Repository
+### Step 1: Clone Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/shivas-hub.git
-cd shivas-hub
+git clone https://github.com/vbp-web/Box-cricket.git
+cd Box-cricket
 ```
 
-### Backend Setup
+### Step 2: Backend Setup
 ```bash
 cd backend
 npm install
 
-# Create .env file (copy from .env.example)
+# Create .env file
 cp .env.example .env
 
 # Edit .env with your credentials
 # Add MongoDB URI, JWT secrets, Cloudinary keys, etc.
-
-# Start backend server
-npm run dev
 ```
 
-### Frontend Setup
-```bash
-cd frontend
-npm install
-
-# Start frontend dev server
-npm run dev
-```
-
-### Access Application
-- **Frontend**: http://localhost:5173
-- **Backend**: http://localhost:5000
-- **API Docs**: http://localhost:5000/health
-
----
-
-## 🔧 Configuration
-
-### Backend Environment Variables
-
-Create `backend/.env` file:
-
+**Backend Environment Variables (.env):**
 ```env
 # Server
 PORT=5000
@@ -115,8 +91,8 @@ NODE_ENV=development
 MONGO_URI=mongodb://localhost:27017/shivas-hub
 
 # JWT
-JWT_SECRET=your_super_secret_jwt_key
-JWT_REFRESH_SECRET=your_super_secret_refresh_key
+JWT_SECRET=your_super_secret_jwt_key_minimum_32_characters
+JWT_REFRESH_SECRET=your_super_secret_refresh_key_minimum_32_characters
 JWT_EXPIRE=15m
 JWT_REFRESH_EXPIRE=7d
 
@@ -124,7 +100,7 @@ JWT_REFRESH_EXPIRE=7d
 UPI_ID=yourname@paytm
 BUSINESS_NAME=Shiva's Box Cricket
 
-# Cloudinary
+# Cloudinary (Get from https://cloudinary.com)
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
@@ -140,40 +116,34 @@ ADMIN_PASSWORD=Admin@123
 SLOT_LOCK_DURATION=180
 ```
 
-### Frontend Environment Variables
+**Start Backend:**
+```bash
+npm run dev
+# Backend runs on http://localhost:5000
+```
 
-Create `frontend/.env` file:
+### Step 3: Frontend Setup
+```bash
+cd frontend
+npm install
 
+# Create .env file (optional, auto-detects API URL)
+cp .env.example .env
+```
+
+**Frontend Environment Variables (.env) - Optional:**
 ```env
 VITE_API_URL=http://localhost:5000/api
 VITE_RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxx
 ```
 
----
+**Start Frontend:**
+```bash
+npm run dev
+# Frontend runs on http://localhost:5173
+```
 
-## 📱 Mobile Access
-
-To test on mobile devices on the same network:
-
-1. Find your computer's IP address:
-   ```bash
-   ipconfig | findstr IPv4
-   ```
-
-2. Access from mobile:
-   - Frontend: `http://YOUR_IP:5173`
-   - Backend: `http://YOUR_IP:5000`
-
-The app automatically detects and uses the correct API URL!
-
-See `MOBILE_FIX_GUIDE.md` for detailed instructions.
-
----
-
-## 🗄️ Database Seeding
-
-Seed the database with sample data:
-
+### Step 4: Seed Database (Optional)
 ```bash
 cd backend
 npm run seed
@@ -185,9 +155,288 @@ This creates:
 - Sample slots
 - Sample bookings
 
+### Step 5: Access Application
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:5000
+- **Health Check**: http://localhost:5000/health
+
 ---
 
-## 📚 API Documentation
+## 📱 Mobile Access (Same Network)
+
+To test on mobile devices:
+
+1. **Find your computer's IP address:**
+   ```bash
+   ipconfig | findstr IPv4
+   ```
+   Example: `192.168.1.100`
+
+2. **Access from mobile:**
+   - Frontend: `http://192.168.1.100:5173`
+   - Backend: `http://192.168.1.100:5000`
+
+The app automatically detects and uses the correct API URL! ✨
+
+---
+
+## 🌐 Production Deployment (Render + MongoDB Atlas)
+
+### Prerequisites
+- GitHub account (code already pushed)
+- MongoDB Atlas account
+- Render account
+- Cloudinary account
+
+---
+
+### Part 1: Setup MongoDB Atlas (10 minutes)
+
+1. **Create Account & Cluster**
+   - Go to: https://www.mongodb.com/cloud/atlas/register
+   - Sign up for free account
+   - Create new cluster (FREE M0 tier)
+   - Choose AWS, closest region
+   - Cluster name: `shivas-hub-cluster`
+
+2. **Create Database User**
+   - Click "Database Access" → "Add New Database User"
+   - Username: `shivashub-admin`
+   - Click "Autogenerate Secure Password" → **SAVE IT**
+   - Privileges: "Read and write to any database"
+
+3. **Whitelist IP Addresses**
+   - Click "Network Access" → "Add IP Address"
+   - Click "Allow Access from Anywhere"
+   - IP: `0.0.0.0/0` (for Render)
+
+4. **Get Connection String**
+   - Click "Database" → "Connect" → "Connect your application"
+   - Copy connection string:
+   ```
+   mongodb+srv://shivashub-admin:<password>@cluster.xxxxx.mongodb.net/?retryWrites=true&w=majority
+   ```
+   - Replace `<password>` with your actual password
+   - Add database name: `/shivas-hub`
+   ```
+   mongodb+srv://shivashub-admin:YOUR_PASSWORD@cluster.xxxxx.mongodb.net/shivas-hub?retryWrites=true&w=majority
+   ```
+   - **SAVE THIS** for Render
+
+---
+
+### Part 2: Deploy Backend to Render (15 minutes)
+
+1. **Create Render Account**
+   - Go to: https://render.com
+   - Sign up with GitHub account
+   - Authorize Render to access repositories
+
+2. **Create Web Service**
+   - Click "New +" → "Web Service"
+   - Connect repository: `vbp-web/Box-cricket`
+   
+   **Configure:**
+   - Name: `shivas-hub-backend`
+   - Region: Choose closest to users
+   - Branch: `main`
+   - Root Directory: `backend`
+   - Runtime: `Node`
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+   - Instance Type: **Free** (or Starter for production)
+
+3. **Add Environment Variables**
+   
+   Click "Advanced" → "Add Environment Variable" and add these:
+
+   ```env
+   NODE_ENV=production
+   
+   MONGO_URI=mongodb+srv://shivashub-admin:YOUR_PASSWORD@cluster.xxxxx.mongodb.net/shivas-hub?retryWrites=true&w=majority
+   
+   JWT_SECRET=generate_a_strong_random_32_character_string_here
+   JWT_REFRESH_SECRET=generate_another_strong_random_32_character_string
+   JWT_EXPIRE=15m
+   JWT_REFRESH_EXPIRE=7d
+   
+   UPI_ID=yourname@paytm
+   BUSINESS_NAME=Shiva's Box Cricket
+   
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_api_secret
+   
+   FRONTEND_URL=https://shivas-hub-frontend.onrender.com
+   
+   ADMIN_EMAIL=admin@shivashub.com
+   ADMIN_PASSWORD=Admin@123
+   
+   SLOT_LOCK_DURATION=180
+   
+   PORT=5000
+   ```
+
+   **Important:**
+   - Generate JWT secrets: https://randomkeygen.com/
+   - Get Cloudinary credentials: https://cloudinary.com
+   - Update FRONTEND_URL after deploying frontend
+
+4. **Deploy**
+   - Click "Create Web Service"
+   - Wait 5-10 minutes for deployment
+   - You'll get a URL like: `https://shivas-hub-backend.onrender.com`
+   - **SAVE THIS URL**
+
+5. **Test Backend**
+   - Visit: `https://shivas-hub-backend.onrender.com/health`
+   - Should return: `{"success": true, "message": "Shiva's Hub API is running"}`
+
+---
+
+### Part 3: Deploy Frontend to Render (10 minutes)
+
+1. **Create Static Site**
+   - Click "New +" → "Static Site"
+   - Connect repository: `vbp-web/Box-cricket`
+   
+   **Configure:**
+   - Name: `shivas-hub-frontend`
+   - Branch: `main`
+   - Root Directory: `frontend`
+   - Build Command: `npm install && npm run build`
+   - Publish Directory: `dist`
+
+2. **Add Environment Variables**
+   
+   ```env
+   VITE_API_URL=https://shivas-hub-backend.onrender.com/api
+   VITE_RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxx
+   ```
+   
+   **Replace** `shivas-hub-backend.onrender.com` with your actual backend URL from Part 2.
+
+3. **Deploy**
+   - Click "Create Static Site"
+   - Wait 5-10 minutes
+   - You'll get a URL like: `https://shivas-hub-frontend.onrender.com`
+
+4. **Update Backend FRONTEND_URL**
+   - Go to backend service in Render
+   - Click "Environment"
+   - Update `FRONTEND_URL` to your frontend URL
+   - Click "Save Changes" (backend will redeploy)
+
+---
+
+### Part 4: Final Steps
+
+1. **Test Your Live App**
+   - Visit your frontend URL
+   - Homepage should load with turfs
+   - Click on a turf → Details should load
+   - Register/Login should work
+   - Booking flow should work
+
+2. **Seed Database (Optional)**
+   - In Render backend service, click "Shell"
+   - Run: `npm run seed`
+   - This creates admin user and sample data
+
+---
+
+## 🎯 Deployment Checklist
+
+### MongoDB Atlas
+- [ ] Cluster created (free M0)
+- [ ] Database user created
+- [ ] IP whitelist: 0.0.0.0/0
+- [ ] Connection string obtained
+
+### Render Backend
+- [ ] Web Service created
+- [ ] Environment variables configured
+- [ ] Deployed successfully
+- [ ] Health check working
+- [ ] Backend URL saved
+
+### Render Frontend
+- [ ] Static Site created
+- [ ] Environment variables configured
+- [ ] Deployed successfully
+- [ ] Website loads
+- [ ] API calls working
+
+### Final Configuration
+- [ ] Backend FRONTEND_URL updated
+- [ ] All features tested
+- [ ] Database seeded (optional)
+
+---
+
+## 🔄 Updating Your Deployment
+
+Render automatically deploys when you push to GitHub:
+
+```bash
+# Make changes to your code
+git add .
+git commit -m "Update: description of changes"
+git push
+
+# Render automatically detects and deploys!
+```
+
+---
+
+## 🆘 Troubleshooting
+
+### Backend Deploy Failed
+- Check build logs in Render dashboard
+- Verify all environment variables are set
+- Test MongoDB connection string locally
+
+### Frontend Build Failed
+- Verify `VITE_API_URL` is correct
+- Check build command: `npm install && npm run build`
+- Ensure publish directory is `dist`
+
+### API Calls Not Working
+- Check backend is running (visit health endpoint)
+- Verify CORS configuration
+- Check browser console for errors
+- Ensure `VITE_API_URL` includes `/api`
+
+### Database Connection Failed
+- Verify MongoDB URI is correct
+- Check IP whitelist includes 0.0.0.0/0
+- Ensure password doesn't have special characters (URL encode if needed)
+
+### Mobile Access Not Working (Local Development)
+- Ensure both devices on same Wi-Fi
+- Backend must listen on 0.0.0.0 (already configured)
+- Check Windows Firewall allows Node.js
+- Frontend auto-detects correct API URL
+
+---
+
+## 💰 Cost Breakdown
+
+### Free Tier (Testing)
+- MongoDB Atlas: **FREE** (M0, 512MB)
+- Render Backend: **FREE** (spins down after 15 min inactivity)
+- Render Frontend: **FREE** (100GB bandwidth/month)
+- **Total: $0/month**
+
+### Production (Recommended)
+- MongoDB Atlas: **FREE** (M0 sufficient for small apps)
+- Render Backend: **$7/month** (Starter, always on)
+- Render Frontend: **FREE**
+- **Total: $7/month**
+
+---
+
+## 📊 API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - Register new user
@@ -217,105 +466,60 @@ This creates:
 ### Payments
 - `POST /api/payment/verify` - Verify UPI payment
 
-See `API.md` for complete API documentation.
-
----
-
-## 🚀 Deployment
-
-### Deploy to Render + MongoDB Atlas
-
-**Quick Steps:**
-
-1. **Upload to GitHub**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git remote add origin https://github.com/YOUR_USERNAME/shivas-hub.git
-   git push -u origin main
-   ```
-
-2. **Setup MongoDB Atlas**
-   - Create free cluster at https://mongodb.com/cloud/atlas
-   - Get connection string
-
-3. **Deploy Backend to Render**
-   - Create Web Service
-   - Connect GitHub repo
-   - Add environment variables
-   - Deploy
-
-4. **Deploy Frontend to Render**
-   - Create Static Site
-   - Connect GitHub repo
-   - Add environment variables
-   - Deploy
-
-**Detailed Guides:**
-- `QUICK_DEPLOYMENT_GUIDE.md` - Quick overview
-- `GITHUB_DEPLOYMENT_GUIDE.md` - GitHub setup
-- `RENDER_DEPLOYMENT_GUIDE.md` - Complete Render deployment
-
----
-
-## 📖 Documentation
-
-- `QUICKSTART.md` - Quick start guide
-- `SETUP_INSTRUCTIONS.md` - Detailed setup
-- `API.md` - API documentation
-- `STRUCTURE.md` - Project structure
-- `TESTING_GUIDE.md` - Testing instructions
-- `MOBILE_FIX_GUIDE.md` - Mobile access setup
-- `DEPLOYMENT.md` - Deployment guide
-
----
-
-## 🎨 Screenshots
-
-### Homepage
-Browse available cricket turfs with search and filters.
-
-### Turf Details
-View detailed information, facilities, and available time slots.
-
-### Booking Page
-Select date, choose slot, and complete payment.
-
-### Admin Dashboard
-Manage turfs, slots, and bookings from a comprehensive dashboard.
-
 ---
 
 ## 🔐 Security Features
 
-- ✅ JWT-based authentication
+- ✅ JWT-based authentication with refresh tokens
 - ✅ Password hashing with bcrypt
 - ✅ Rate limiting on API endpoints
 - ✅ Helmet.js security headers
 - ✅ CORS configuration
 - ✅ Input validation and sanitization
 - ✅ Secure environment variables
-- ✅ Token refresh mechanism
+- ✅ HTTPS in production (automatic on Render)
 
 ---
 
-## 🧪 Testing
+## 📝 Default Admin Credentials
 
-### Run Backend Tests
-```bash
-cd backend
-npm test
+After seeding the database:
+- **Email**: admin@shivashub.com
+- **Password**: Admin@123
+
+**⚠️ Change these in production!**
+
+---
+
+## 🎨 Project Structure
+
 ```
-
-### Run Frontend Tests
-```bash
-cd frontend
-npm test
+Box-cricket/
+├── backend/
+│   ├── config/          # Database, Cloudinary, Razorpay config
+│   ├── controllers/     # Route controllers
+│   ├── middleware/      # Auth, error handling, logging
+│   ├── models/          # Mongoose models
+│   ├── routes/          # API routes
+│   ├── utils/           # Helper functions
+│   ├── server.js        # Entry point
+│   └── package.json
+│
+├── frontend/
+│   ├── public/          # Static assets
+│   ├── src/
+│   │   ├── components/  # Reusable components
+│   │   ├── context/     # React context (Auth)
+│   │   ├── pages/       # Page components
+│   │   ├── utils/       # API client, helpers
+│   │   ├── App.jsx      # Main app component
+│   │   └── main.jsx     # Entry point
+│   ├── package.json
+│   └── vite.config.js
+│
+├── .gitignore
+└── README.md
 ```
-
-### Manual Testing
-See `TESTING_GUIDE.md` for comprehensive testing checklist.
 
 ---
 
@@ -331,9 +535,9 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📝 License
+## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ---
 
@@ -341,8 +545,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Shiva's Hub Team**
 
-- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
-- Email: admin@shivashub.com
+- GitHub: [@vbp-web](https://github.com/vbp-web)
+- Repository: [Box-cricket](https://github.com/vbp-web/Box-cricket)
 
 ---
 
@@ -352,19 +556,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Express.js for the robust backend framework
 - MongoDB for the flexible database
 - Tailwind CSS for beautiful styling
+- Render for easy deployment
 - All open-source contributors
 
 ---
 
 ## 📞 Support
 
-For support, email admin@shivashub.com or open an issue on GitHub.
+For support or questions:
+- Open an issue on GitHub
+- Email: admin@shivashub.com
 
 ---
 
-## 🗺️ Roadmap
+## 🗺️ Future Roadmap
 
-### Version 2.0 (Planned)
 - [ ] Razorpay payment gateway integration
 - [ ] Real-time notifications with WebSockets
 - [ ] Advanced analytics dashboard
@@ -373,36 +579,17 @@ For support, email admin@shivashub.com or open an issue on GitHub.
 - [ ] Customer reviews and ratings
 - [ ] Loyalty program
 - [ ] Automated email reminders
-
-See `UPGRADE_ROADMAP.md` for detailed future plans.
-
----
-
-## 📊 Project Stats
-
-- **Total Files**: 100+
-- **Lines of Code**: 10,000+
-- **Components**: 15+
-- **API Endpoints**: 25+
-- **Database Models**: 6
+- [ ] SMS notifications
+- [ ] Social media integration
 
 ---
 
-## 🌟 Star History
+## ⭐ Star This Repository
 
-If you find this project useful, please consider giving it a ⭐!
+If you find this project useful, please consider giving it a ⭐ on GitHub!
 
 ---
 
 **Made with ❤️ by Shiva's Hub Team**
 
----
-
-## Quick Links
-
-- [Live Demo](#) (Coming Soon)
-- [Documentation](./QUICKSTART.md)
-- [API Docs](./API.md)
-- [Deployment Guide](./QUICK_DEPLOYMENT_GUIDE.md)
-- [Report Bug](https://github.com/YOUR_USERNAME/shivas-hub/issues)
-- [Request Feature](https://github.com/YOUR_USERNAME/shivas-hub/issues)
+🏏 **Happy Booking!** 🎉
